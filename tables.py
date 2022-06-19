@@ -31,5 +31,17 @@ registers = {
     '100' : 'R4',
     '101' : 'R5',
     '110' : 'R6',
-    '111' : 'FLAG',
+    '111' : 'FLAG'
+}
+
+errors = {
+    '01' : 'Typo in instruction name or register.',
+    '02' : 'Use of undefined variable.',
+    '03' : 'Use of undefined label.',
+    '04' : 'Illegal use of FLAG register.',
+    '05' : 'Illegal immediate value (more than 8 bits).',
+    '06' : 'Misuse of label as variable or vice versa.',
+    '07' : 'Variables not declared at the beginning.',
+    '08' : 'Missing hlt instruction.',
+    '09' : 'Last instruction is not hlt.'
 }
