@@ -15,4 +15,3 @@ for lines in instructions:
         definitions.append(lines)
     else:
         main.append(lines)
-print(main)
