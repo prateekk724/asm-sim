@@ -5,13 +5,12 @@ with open("input.txt", "r") as f:
     instruct = instruct.split("\n")
     instructions = list()
     for lines in instruct:
-        instructions.append(lines.split())      #
+        instructions.append(lines.split())
 
-main = list()
-definitions = list()
-
-for lines in instructions:    
-    if(lines[0] == "var"):
-        definitions.append(lines)
-    else:
-        main.append(lines)
+initial_state=0
+for lines in instructions:
+    if(lines[0] != "var" and initial_state==0):
+        idx = instructions.index(lines)
+        initial_state = 1
+    
+print(idx)
