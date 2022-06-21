@@ -16,6 +16,9 @@ lineCount = 0
 totalLines = len(instructions) 
 
 while(instructions[lineCount][0] == "var"):
+    if(len(instructions[lineCount]) != 2):
+        print("ERROR: Illegal variable declaration.")
+        print(f"--> {lineCount+1}: " + codeLines[lineCount])
     # Handle variable declaration.
     lineCount += 1
 
