@@ -22,6 +22,14 @@ opcodes = {
     '01010' : 'hlt'     # F     hlt
 }
 
+instructionType = {
+    'A' : ['add', 'sub', 'mul', 'or', 'xor', 'and'],
+    'B' : ['mov', 'rs', 'ls'],
+    'C' : ['mov', 'div', 'not', 'cmp'],
+    'D' : ['ld', 'st'],
+    'E' : ['jmp', 'jlt', 'jgt', 'je'],
+}
+
 registers = {
 #   addr  : name
     '000' : 'R0',

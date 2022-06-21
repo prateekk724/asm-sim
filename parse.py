@@ -2,12 +2,6 @@ from tables import *
 
 INPUT_FILE = "input.txt"
 
-typeA_instructions = ['add', 'sub', 'mul', 'or', 'xor', 'and']
-typeB_instructions = ['mov', 'rs', 'ls']
-typeC_instructions = ['mov', 'div', 'not', 'cmp']
-typeD_instructions = ['ld', 'st']
-typeE_instructions = ['jmp', 'jlt', 'jgt', 'je']
-
 # Read input file and convert the instructions
 # to a format that is easy to handle.
 instructions = list()
@@ -66,13 +60,13 @@ for i in range(lineCount, totalLines):
     if len(line) > 0 and line[0] not in opcodes.values():
         print(f"ERROR: opcode '{line[0]}' is invalid.")
         print(f"--> {i+1}: " + codeLines[i])
-    elif line[0] in typeA_instructions:
+    elif line[0] in instructionType['A']:
         parse_typeA(line, i)
-    elif line[0] in typeB_instructions:
+    elif line[0] in instructionType['B']:
         parse_typeB(line, i)
-    elif line[0] in typeC_instructions:
+    elif line[0] in instructionType['C']:
         parse_typeC(line, i)
-    elif line[0] in typeD_instructions:
+    elif line[0] in instructionType['D']:
         parse_typeD(line, i)
-    elif line[0] in typeE_instructions:
+    elif line[0] in instructionType['E']:
         parse_typeE(line, i)
