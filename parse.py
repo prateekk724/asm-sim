@@ -40,6 +40,13 @@ def parse_typeB(line, lineNumber):
     return
 
 def parse_typeC(line, lineNumber):
+    if len(line) != 3:
+        print("ERROR: mem_addr/register or instruction type mismatch.")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    for i in range(1, 3):
+        if line[i] not in registers.values():
+            print(f"ERROR: Invalid register usage -> '{line[i]}'.")
+            print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
     return
 
 def parse_typeD(line, lineNumber):
