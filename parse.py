@@ -37,6 +37,22 @@ def parse_typeE(line, lineNumber):
     return
 
 def parse_typeB(line, lineNumber):
+    if len(line) != 3:
+        print("ERROR: Register count or instruction type mismatch")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    if line[1] not in registers.values():
+        print("ERROR: Register count or instruction type mismatch")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+        # parse_typeC(line, lineNumber)
+    if line[2][0] == '$': 
+        if int(line[2][1:]) > 255:
+            print("ERROR: Immediate value greater than 255")
+            print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+        elif int(line[2][1:]) < 0:
+            print("ERROR: Immediate value less than 0")
+            print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    elif line[0] == 'mov':
+        parse_typeC(line, lineNumber)
     return
 
 def parse_typeC(line, lineNumber):
