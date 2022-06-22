@@ -12,9 +12,19 @@ with open(INPUT_FILE, 'r') as file:
         instructions.append(line.split())
     instructions.pop()
 
+# source code data
 lineCount = 0
 totalLines = len(instructions) 
 programVariables = list()
+programLabels = list()
+
+def error(code, line, object = ''):
+    if object != '':
+        print("ERROR: " + errors[code] + "-> '" + object + "'")
+    else:
+        print("ERROR: " + errors[code])
+    print(f"--> {line+1}: " + codeLines[line])
+    return 
 
 while(instructions[lineCount][0] == "var"):
     if(len(instructions[lineCount]) != 2):
@@ -26,14 +36,16 @@ while(instructions[lineCount][0] == "var"):
 # Check program halt
 if(instructions[-1][0] != "hlt" or len(instructions[-1]) != 1):
     print("ERROR: Last instruction is not 'hlt'")
+    error(9, instructions[-1], '')
     
-def parse_typeE(line, lineNumber):
-    if len(line) != 2:
-        print("ERROR: mem_addr or instruction type mismatch.")
+def parse_typeA(line, lineNumber):
+    if len(line) != 4:
+        print("ERROR: Register count or instruction type mismatch.")
         print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
-    if line[1] != 'mem_addr':
-        # TODO: add mem_addr type.
-        pass
+    for i in range(1, 4):
+        if line[i] not in registers.values():
+            print(f"ERROR: Invalid register usage -> '{line[i]}'.")
+            print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
     return
 
 def parse_typeB(line, lineNumber):
@@ -73,25 +85,29 @@ def parse_typeD(line, lineNumber):
         print(f"ERROR: Invalid register usage -> '{line[1]}'.")
         print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
     if line[2] not in programVariables:
-        print(f"ERROR: {line[2]} variable not declared.")
+        print("ERROR: Illegal variable access -> '{line[2]}'")
         print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
-
     return
 
-def parse_typeA(line, lineNumber):
-    if len(line) != 4:
-        print("ERROR: Register count or instruction type mismatch.")
+def parse_typeE(line, lineNumber):
+    if len(line) != 2:
+        print("ERROR: mem_addr or instruction type mismatch.")
         print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
-    for i in range(1, 4):
-        if line[i] not in registers.values():
-            print(f"ERROR: Invalid register usage -> '{line[i]}'.")
-            print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    if line[1][0:-1] not in programLabels:
+        print("ERROR: Illegal label access -> '{line[2]}'")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
     return
+
+def parse_label(line, linenumber):
+    programLabels.append(line[0][0:-1])
+    return 
 
 # Check opcodes first
 for i in range(lineCount, totalLines):
     line = instructions[i]
-    if len(line) > 0 and line[0] not in opcodes.values():
+    if len(line) == 1 and line[0][-1] == ':':
+        parse_label(line, i)
+    elif len(line) > 0 and line[0] not in opcodes.values():
         print(f"ERROR: opcode '{line[0]}' is invalid.")
         print(f"--> {i+1}: " + codeLines[i])
     elif line[0] in instructionType['A']:
