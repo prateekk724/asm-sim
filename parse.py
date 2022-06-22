@@ -20,7 +20,7 @@ programLabels = list()
 
 def error(code, line, object = ''):
     if object != '':
-        print("ERROR: " + errors[code] + "-> '" + object + "'")
+        print("ERROR: " + errors[code] + " -> '" + object + "'")
     else:
         print("ERROR: " + errors[code])
     print(f"--> {line+1}: " + codeLines[line])
@@ -35,8 +35,7 @@ while(instructions[lineCount][0] == "var"):
 
 # Check program halt
 if(instructions[-1][0] != "hlt" or len(instructions[-1]) != 1):
-    print("ERROR: Last instruction is not 'hlt'")
-    error(9, instructions[-1], '')
+    error(9, totalLines-1, '')
     
 def parse_typeA(line, lineNumber):
     if len(line) != 4:
@@ -103,7 +102,7 @@ def parse_label(line, linenumber):
     return 
 
 # Check opcodes first
-for i in range(lineCount, totalLines):
+for i in range(lineCount, totalLines-1):
     line = instructions[i]
     if len(line) == 1 and line[0][-1] == ':':
         parse_label(line, i)

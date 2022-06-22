@@ -4,4 +4,4 @@ add R1 R2 R16
 mov R2 $100
 mul R3 R1 R2
 st R3 X
-hlt
+halt
