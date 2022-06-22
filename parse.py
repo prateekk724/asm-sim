@@ -43,11 +43,22 @@ def parse_typeC(line, lineNumber):
     return
 
 def parse_typeD(line, lineNumber):
+    if len(line) != 3:
+        print("ERROR: Instruction type mismatch.")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    if line[1] not in registers.values():
+        print(f"ERROR: Invalid register usage -> '{line[1]}'.")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+    if line[2] not in programVariables:
+        print(f"ERROR: {line[2]} variable not declared.")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
+
     return
 
 def parse_typeA(line, lineNumber):
     if len(line) != 4:
         print("ERROR: Register count or instruction type mismatch.")
+        print(f"--> {lineNumber+1}: " + codeLines[lineNumber])
     for i in range(1, 4):
         if line[i] not in registers.values():
             print(f"ERROR: Invalid register usage -> '{line[i]}'.")
