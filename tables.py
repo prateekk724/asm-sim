@@ -43,13 +43,13 @@ registers = {
 }
 
 errors = {
-    '01' : 'Typo in instruction name or register.',
-    '02' : 'Use of undefined variable.',
-    '03' : 'Use of undefined label.',
-    '04' : 'Illegal use of FLAG register.',
-    '05' : 'Illegal immediate value (more than 8 bits).',
-    '06' : 'Misuse of label as variable or vice versa.',
-    '07' : 'Variables not declared at the beginning.',
-    '08' : 'Missing hlt instruction.',
-    '09' : 'Last instruction is not hlt.'
+    1 : 'Typo in instruction name or register.',
+    2 : 'Use of undefined variable.',
+    3 : 'Use of undefined label.',
+    4 : 'Illegal use of FLAG register.',
+    5 : 'Illegal immediate value (more than 8 bits).',
+    6 : 'Misuse of label as variable or vice versa.',
+    7 : 'Variables not declared at the beginning.',
+    8 : 'Missing hlt instruction.',
+    9 : 'Last instruction is not hlt.'
 }
