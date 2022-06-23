@@ -43,7 +43,7 @@ registers = {
 }
 
 errors = {
-    1 : 'Typo in instruction name or register.',
+    1 : 'Typo/misuse of instruction name or register.',
     2 : 'Use of undefined variable.',
     3 : 'Use of undefined label.',
     4 : 'Illegal use of FLAG register.',
