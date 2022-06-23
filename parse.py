@@ -13,7 +13,6 @@ with open(INPUT_FILE, 'r') as file:
     instructions.pop()
 
 # source code data
-lineCount = 0
 totalLines = len(instructions) 
 programVariables = list()
 programLabels = list()
@@ -26,16 +25,6 @@ def error(code, line, object = ''):
     print(f"--> {line+1}: " + codeLines[line])
     return 
 
-while(instructions[lineCount][0] == "var"):
-    if(len(instructions[lineCount]) != 2):
-        print("ERROR: Illegal variable declaration.")
-        print(f"--> {lineCount+1}: " + codeLines[lineCount])
-    programVariables.append(instructions[lineCount][1])
-    lineCount += 1
-
-# Check program halt
-if(instructions[-1][0] != "hlt" or len(instructions[-1]) != 1):
-    error(9, totalLines-1, '')
     
 def parse_typeA(line, lineNumber):
     if len(line) != 4:
@@ -101,21 +90,35 @@ def parse_label(line, linenumber):
     programLabels.append(line[0][0:-1])
     return 
 
-# Check opcodes first
-for i in range(lineCount, totalLines-1):
-    line = instructions[i]
-    if len(line) == 1 and line[0][-1] == ':':
-        parse_label(line, i)
-    elif len(line) > 0 and line[0] not in opcodes.values():
-        print(f"ERROR: opcode '{line[0]}' is invalid.")
-        print(f"--> {i+1}: " + codeLines[i])
-    elif line[0] in instructionType['A']:
-        parse_typeA(line, i)
-    elif line[0] in instructionType['B']:
-        parse_typeB(line, i)
-    elif line[0] in instructionType['C']:
-        parse_typeC(line, i)
-    elif line[0] in instructionType['D']:
-        parse_typeD(line, i)
-    elif line[0] in instructionType['E']:
-        parse_typeE(line, i)
+def parse():
+    lineCount = 0;
+    while(instructions[lineCount][0] == "var"):
+        if(len(instructions[lineCount]) != 2):
+            print("ERROR: Illegal variable declaration.")
+            print(f"--> {lineCount+1}: " + codeLines[lineCount])
+        programVariables.append(instructions[lineCount][1])
+        lineCount += 1
+
+    if(instructions[-1][0] != "hlt" or len(instructions[-1]) != 1):
+        error(9, totalLines-1, '')
+
+    for i in range(lineCount, totalLines-1):
+        line = instructions[i]
+        if len(line) == 1 and line[0][-1] == ':':
+            parse_label(line, i)
+        elif len(line) > 0 and line[0] not in opcodes.values():
+            print(f"ERROR: opcode '{line[0]}' is invalid.")
+            print(f"--> {i+1}: " + codeLines[i])
+        elif line[0] in instructionType['A']:
+            parse_typeA(line, i)
+        elif line[0] in instructionType['B']:
+            parse_typeB(line, i)
+        elif line[0] in instructionType['C']:
+            parse_typeC(line, i)
+        elif line[0] in instructionType['D']:
+            parse_typeD(line, i)
+        elif line[0] in instructionType['E']:
+            parse_typeE(line, i)
+    return
+
+parse()
