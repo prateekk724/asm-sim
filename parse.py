@@ -24,7 +24,6 @@ def error(code, line, object = ''):
         print("ERROR: " + errors[code])
     print(f"--> {line+1}: " + codeLines[line])
     return 
-
     
 def parse_typeA(line, lineNumber):
     if len(line) != 4:
@@ -72,8 +71,12 @@ def parse_typeE(line, lineNumber):
         error(3, lineNumber)
     return
 
-def parse_label(line, linenumber):
-    programLabels.append(line[0][0:-1])
+def parse_label(line, lineNumber):
+    label = line[0][0:-1];
+    if(label not in programLabels):
+        programLabels.append(line[0][0:-1])
+    else:
+        error(3, lineNumber, label)
     return 
 
 def parse():
@@ -89,9 +92,9 @@ def parse():
 
     for i in range(lineCount, totalLines-1):
         line = instructions[i]
-        if len(line) == 1 and line[0][-1] == ':':
+        if line[0][-1] == ':':
             parse_label(line, i)
-        elif len(line) > 0 and line[0] not in opcodes.values():
+        if len(line) > 0 and line[0] not in opcodes.values():
             error(1, lineCount)
         elif line[0] in instructionType['A']:
             parse_typeA(line, i)
@@ -106,3 +109,4 @@ def parse():
     return
 
 parse()
+print(programLabels)
