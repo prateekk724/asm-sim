@@ -4,16 +4,15 @@ INPUT_FILE = "input.txt"
 
 # Read input file and convert the instructions
 # to a format that is easy to handle.
-instructions = list()
+instructions = dict()
 with open(INPUT_FILE, 'r') as file:
     text = file.read()
     codeLines = text.split("\n")
-    for line in codeLines:
-        instructions.append(line.split())
-    instructions.pop()
+    for i in range(len(codeLines)):
+        if codeLines[i] != '':
+            instructions[i] = codeLines[i].split()
 
 # source code data
-totalLines = len(instructions) 
 programVariables = dict()
 programLabels = dict()
 
@@ -27,7 +26,7 @@ def error(code, line, object = ''):
         print("ERROR: " + errors[code] + " -> '" + object + "'")
     else:
         print("ERROR: " + errors[code])
-    print(f"--> {line+1}: " + codeLines[line])
+    print(f"--> {line}: " + codeLines[line])
     return 
 
 # Parsers for instructions of type A to E
@@ -100,8 +99,14 @@ def parse_typeE(line, lineNumber):
         line[1] = programLabels[line[1]]
     return ''.join(line)
 
+def parse_typeF(line, lineNumber):
+    if len(line) != 1:
+        error(1, lineNumber)
+    line[0] = opcodes[line[0]].ljust(16, '0')
+    return ''.join(line)
+
 def parse_label(line, lineNumber):
-    label = line[0][0:-1];
+    label = line[0][0:-1]
     if(label not in programLabels):
         programLabels[line[0][0:-1]] = bin(lineNumber)[2:].rjust(8, '0')
     else:
@@ -109,20 +114,25 @@ def parse_label(line, lineNumber):
     return 
 
 def assemble():
-    lineCount = 0
-    while(instructions[lineCount][0] == "var"):
-        if(len(instructions[lineCount]) != 2):
-            error(2, lineCount)
-        lineCount += 1
-    for i in range(0,lineCount):
-        programVariables[instructions[i][1]] = bin(totalLines-lineCount+i)[2:].rjust(8, '0')   
-    for i in range(lineCount, totalLines-1):
-        line = instructions[i]
-        if line[0][-1] == ':':
-            parse_label(line, i)
-        machineInstruction = ''
-        if len(line) > 0 and line[0] not in opcodes.keys():
-            error(1, lineCount)
+    machineInstruction = ''
+    variableLineNumbers = list()
+    for i, line in instructions.items():
+        if line[0] != 'var' or len(line) != 2 or line[1] in opcodes.keys() or line[1] in registers.keys():
+            if line[0] in opcodes.keys():   break
+            else:   error(2, i)
+        else:
+            programVariables[line[1]] = 'null'
+            variableLineNumbers.append(i)
+    for lineNumber in variableLineNumbers:
+        instructions.pop(variableLineNumbers[lineNumber])
+    totalInstructions = len(instructions)
+    variableNames = list(programVariables.keys())
+    for i in range(len(variableNames)):
+        programVariables[(variableNames[i])] = bin(totalInstructions+i)[2:].rjust(8, '0')
+    for i, line in instructions.items():
+        if line[0] not in opcodes.keys():
+            # TODO: add error subcases.
+            error(1, i)
         elif line[0] in instructionType['A']:
             machineInstruction = parse_typeA(line, i)
         elif line[0] in instructionType['B']:
@@ -133,13 +143,10 @@ def assemble():
             machineInstruction = parse_typeD(line, i)
         elif line[0] in instructionType['E']:
             machineInstruction = parse_typeE(line, i)
-        # TODO: check and impliment if machineInstruction validation is necessary
+        elif line[0] in instructionType['F']:
+            machineInstruction = parse_typeF(line, i)
         machineCode.append(machineInstruction)
-    if(instructions[-1][0] != "hlt" or len(instructions[-1]) != 1):
-        error(9, totalLines-1, '')
-    else:
-        machineCode.append(opcodes[instructions[-1][0]].ljust(16, '0'))
-    return True
+    return
 
 assemble()
 for machineInstruction in machineCode:
