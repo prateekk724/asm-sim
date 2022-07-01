@@ -28,6 +28,7 @@ instructionType = {
     'C' : ['mov', 'div', 'not', 'cmp'],
     'D' : ['ld', 'st'],
     'E' : ['jmp', 'jlt', 'jgt', 'je'],
+    'F' : ['hlt']
 }
 
 registers = {
