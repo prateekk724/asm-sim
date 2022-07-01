@@ -16,7 +16,6 @@ with open(INPUT_FILE, 'r') as file:
 totalLines = len(instructions) 
 programVariables = dict()
 programLabels = dict()
-totalInstructions = totalLines - len(programVariables)
 
 # machine code
 machineCode = list()
@@ -61,7 +60,7 @@ def parse_typeB(line, lineNumber):
         elif int(line[2][1:]) < 0:
             error(5, lineNumber, line[2])
         else:
-            line[2] = bin((int)(line[2][1:]))[2:].zfill(8)
+            line[2] = bin((int)(line[2][1:]))[2:].rjust(8, '0')
         return ''.join(line)
     elif line[0] == 'mov':
         return parse_typeC(line, lineNumber)
@@ -104,7 +103,7 @@ def parse_typeE(line, lineNumber):
 def parse_label(line, lineNumber):
     label = line[0][0:-1];
     if(label not in programLabels):
-        programLabels[line[0][0:-1]] = bin(lineNumber)[2:].zfill(8)
+        programLabels[line[0][0:-1]] = bin(lineNumber)[2:].rjust(8, '0')
     else:
         error(3, lineNumber, label)
     return 
@@ -114,9 +113,9 @@ def assemble():
     while(instructions[lineCount][0] == "var"):
         if(len(instructions[lineCount]) != 2):
             error(2, lineCount)
-        else:
-            programVariables[instructions[lineCount][1]] = bin(lineCount+totalInstructions-1)[2:].zfill(8)
         lineCount += 1
+    for i in range(0,lineCount):
+        programVariables[instructions[i][1]] = bin(totalLines-lineCount+i)[2:].rjust(8, '0')   
     for i in range(lineCount, totalLines-1):
         line = instructions[i]
         if line[0][-1] == ':':

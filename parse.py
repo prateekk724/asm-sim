@@ -56,7 +56,6 @@ def parse_typeC(line, lineNumber):
             error(1, lineNumber, line[i])
         else:
             line[i] = registers[line[i]]
-    machineCode.append(''.join(line))
     return
 
 def parse_typeD(line, lineNumber):
