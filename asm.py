@@ -1,16 +1,18 @@
+#!/bin/python
+from sys import stdin
 from tables import *
-
-INPUT_FILE = "input.txt"
 
 # Read input file and convert the instructions
 # to a format that is easy to handle.
 instructions = dict()
-with open(INPUT_FILE, 'r') as file:
-    text = file.read()
-    codeLines = text.split("\n")
-    for i in range(len(codeLines)):
-        if codeLines[i] != '':
-            instructions[i] = codeLines[i].split()
+lineCount = 0
+for line in stdin:
+    if line == '':
+        break
+    else:
+        codeLine = line[:-1]
+        instructions[lineCount] = codeLine.split()
+        lineCount += 1
 
 # source code data
 programVariables = dict()
@@ -21,12 +23,15 @@ machineCode = list()
 
 # Error Handler to prevent repetition of same error printing
 # in multiple functions.
+errorCount = 0
 def error(code, line, object = ''):
+    global errorCount
+    errorCount += 1
     if object != '':
         print("ERROR: " + errors[code] + " -> '" + object + "'")
     else:
         print("ERROR: " + errors[code])
-    print(f"--> {line}: " + codeLines[line])
+    print(f"--> {line+1}: " + ' '.join(instructions[line]))
     return 
 
 # Parsers for instructions of type A to E
@@ -93,7 +98,7 @@ def parse_typeE(line, lineNumber):
     if len(line) != 2:
         error(1, lineNumber)
     line[0] = opcodes[line[0]] + '000' # 3-bit padding
-    if line[1][0:-1] not in programLabels.keys():
+    if line[1] not in programLabels.keys():
         error(3, lineNumber)
     else:
         line[1] = programLabels[line[1]]
@@ -114,22 +119,44 @@ def parse_label(line, lineNumber):
     return 
 
 def assemble():
-    machineInstruction = ''
+    # Variable Handling
     variableLineNumbers = list()
     for i, line in instructions.items():
-        if line[0] != 'var' or len(line) != 2 or line[1] in opcodes.keys() or line[1] in registers.keys():
-            if line[0] in opcodes.keys():   break
-            else:   error(2, i)
+        if line[0] == 'var':
+            if len(line) != 2:
+                error(1, i)
+            else:
+                programVariables[line[1]] = 'null'
+                variableLineNumbers.append(i)
         else:
-            programVariables[line[1]] = 'null'
-            variableLineNumbers.append(i)
+            break
+                
+        #if line[0] != 'var' or len(line) != 2 or line[1] in opcodes.keys() or line[1] in registers.keys():
+        #    if line[0] in opcodes.keys():
+        #        break
+        #    else:
+        #        error(2, i)
+        #else:
+        #    programVariables[line[1]] = 'null'
+        #    variableLineNumbers.append(i)
     for lineNumber in variableLineNumbers:
         instructions.pop(variableLineNumbers[lineNumber])
+
     totalInstructions = len(instructions)
     variableNames = list(programVariables.keys())
+    instructionLineNumbers = list(instructions.keys())
     for i in range(len(variableNames)):
         programVariables[(variableNames[i])] = bin(totalInstructions+i)[2:].rjust(8, '0')
+
+    # Label Handling
     for i, line in instructions.items():
+        if line[0][-1] == ':' and len(line[0]) > 1:
+            programLabels[line[0][:-1]] = bin(instructionLineNumbers.index(i))[2:].rjust(8, '0') 
+            instructions[i] = line[1:]
+
+    # Instruction handling
+    for i, line in instructions.items():
+        machineInstruction = ''
         if line[0] not in opcodes.keys():
             # TODO: add error subcases.
             error(1, i)
@@ -148,6 +175,8 @@ def assemble():
         machineCode.append(machineInstruction)
     return
 
-assemble()
-for machineInstruction in machineCode:
-    print(machineInstruction)
+if __name__ == '__main__':
+    assemble()
+    print(f"Total errors: {errorCount}")
+    for machineInstruction in machineCode:
+        print(machineInstruction)
