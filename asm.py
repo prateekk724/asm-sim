@@ -151,6 +151,12 @@ def assemble():
                 else:
                     error(3, i)
 
+    if instructions[list(instructions.keys())[-1]] != ['hlt']:
+        error(9, list(instructions.keys())[-1])
+    for i, line in list(instructions.items())[:-1]:
+        if line == ['hlt']:
+            error(1, i)
+
     # Instruction handling
     for i, line in instructions.items():
         machineInstruction = ''
