@@ -40,7 +40,7 @@ registers = {
     'R4' : '100',
     'R5' : '101',
     'R6' : '110',
-#   '111' : 'FLAGS'
+   'FLAGS' : '111'
 }
 
 errors = {
@@ -52,5 +52,8 @@ errors = {
     6 : 'Misuse of label as variable or vice versa.',
     7 : 'Variables not declared at the beginning.',
     8 : 'Missing hlt instruction.',
-    9 : 'Last instruction is not hlt.'
+    9 : 'Last instruction is not hlt.',
+    10: 'Illegal use of variable or Label name'
 }
+
+keywords = ['add', 'sub', 'mul', 'or', 'xor', 'and', 'mov', 'rs', 'ls', 'mov', 'div', 'not', 'cmp', 'ld', 'st', 'jmp', 'jlt', 'jgt', 'je', 'hlt', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'FLAGS']

@@ -5,6 +5,7 @@ from tables import *
 # Read input file and convert the instructions
 # to a format that is easy to handle.
 instructions = dict()
+srcCode = dict()
 lineCount = 0
 for line in stdin:
     if line == '':
@@ -12,6 +13,7 @@ for line in stdin:
     else:
         codeLine = line[:-1]
         instructions[lineCount] = codeLine.split()
+        srcCode[lineCount] = codeLine.split()
         lineCount += 1
 
 # source code data
@@ -31,7 +33,7 @@ def error(code, line, object = ''):
         print("ERROR: " + errors[code] + " -> '" + object + "'")
     else:
         print("ERROR: " + errors[code])
-    print(f"--> {line+1}: " + ' '.join(instructions[line]))
+    print(f"--> {line+1}: " + ' '.join(srcCode[line]))
     return 
 
 # Parsers for instructions of type A to E
@@ -40,7 +42,7 @@ def parse_typeA(line, lineNumber):
     if len(line) != 4:
         error(1, lineNumber)
     line[0] = opcodes[line[0]] + '00' # 2-bit padding
-    for i in range(1, 4):
+    for i in range(1, len(line)):
         if line[i] not in registers.keys():
             error(1, lineNumber, line[i])
         else:
@@ -130,15 +132,6 @@ def assemble():
                 variableLineNumbers.append(i)
         else:
             break
-                
-        #if line[0] != 'var' or len(line) != 2 or line[1] in opcodes.keys() or line[1] in registers.keys():
-        #    if line[0] in opcodes.keys():
-        #        break
-        #    else:
-        #        error(2, i)
-        #else:
-        #    programVariables[line[1]] = 'null'
-        #    variableLineNumbers.append(i)
     for lineNumber in variableLineNumbers:
         instructions.pop(variableLineNumbers[lineNumber])
 
@@ -150,9 +143,13 @@ def assemble():
 
     # Label Handling
     for i, line in instructions.items():
-        if line[0][-1] == ':' and len(line[0]) > 1:
-            programLabels[line[0][:-1]] = bin(instructionLineNumbers.index(i))[2:].rjust(8, '0') 
-            instructions[i] = line[1:]
+        if line[0][-1] == ':' :
+            if len(line) > 1:
+                if line[0][:-1] not in programLabels.keys():
+                    programLabels[line[0][:-1]] = bin(instructionLineNumbers.index(i))[2:].rjust(8, '0') 
+                    instructions[i] = line[1:]
+                else:
+                    error(3, i)
 
     # Instruction handling
     for i, line in instructions.items():
@@ -177,6 +174,7 @@ def assemble():
 
 if __name__ == '__main__':
     assemble()
-    print(f"Total errors: {errorCount}")
-    for machineInstruction in machineCode:
-        print(machineInstruction)
+    #print(f"Total errors: {errorCount}")
+    if errorCount == 0:
+        for machineInstruction in machineCode:
+            print(machineInstruction)
