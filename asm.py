@@ -121,6 +121,9 @@ def parse_label(line, lineNumber):
     return 
 
 def assemble():
+    if list(instructions.keys())[-1] > 255:
+        error(11, list(instructions.keys())[-1])
+
     # Variable Handling
     variableLineNumbers = list()
     for i, line in instructions.items():

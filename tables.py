@@ -53,7 +53,8 @@ errors = {
     7 : 'Variables not declared at the beginning.',
     8 : 'Missing hlt instruction.',
     9 : 'Last instruction is not hlt.',
-    10: 'Illegal use of variable or Label name'
+    10: 'Illegal use of variable or Label name',
+    11: 'Assembly code cannot be accomodated in memory'
 }
 
 keywords = ['add', 'sub', 'mul', 'or', 'xor', 'and', 'mov', 'rs', 'ls', 'mov', 'div', 'not', 'cmp', 'ld', 'st', 'jmp', 'jlt', 'jgt', 'je', 'hlt', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'FLAGS']

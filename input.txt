@@ -3,6 +3,7 @@ var Y
 mov R1 $10
 labelA: mul R3 R1 R2
 st R3 X
+hlt
 labelX: mov R2 $100
 jmp labelA
 jlt labelX
