@@ -1,6 +1,7 @@
 var X
 var Y
 mov R1 $10
+mov FLAGS R2
 labelA: mul R3 R1 R2
 st R3 X
 hlt

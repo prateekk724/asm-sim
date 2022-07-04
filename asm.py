@@ -41,6 +41,7 @@ def error(code, line, object = ''):
 def parse_typeA(line, lineNumber):
     if len(line) != 4:
         error(1, lineNumber)
+        return ''
     line[0] = opcodes[line[0]] + '00' # 2-bit padding
     for i in range(1, len(line)):
         if line[i] not in registers.keys():
@@ -52,6 +53,7 @@ def parse_typeA(line, lineNumber):
 def parse_typeB(line, lineNumber):
     if len(line) != 3:
         error(1, lineNumber)
+        return ''
     if line[2][0] == '$': 
         if line[0] == 'mov':
             line[0] = '10010'
@@ -74,17 +76,29 @@ def parse_typeB(line, lineNumber):
 def parse_typeC(line, lineNumber):
     if len(line) != 3:
         error(3, lineNumber)
-    line[0] = opcodes[line[0]] + '00000' # 5-bit padding
-    for i in range(1, 3):
-        if line[i] not in registers.keys():
-            error(1, lineNumber, line[i])
+        return ''
+    if line[2] not in registers.keys():
+        error(1, lineNumber, line[2])
+    else:
+        line[2] = registers[line[2]]
+    if line[1] == 'FLAGS':
+        if line[0] == 'mov':
+            line[0] = '10011' + '00000'
+            line[1] = '111'
+            return ''.join(line)
         else:
-            line[i] = registers[line[i]]
+            error(1, lineNumbr, line[1])
+    elif line[1] in registers.keys():
+        line[1] = registers[line[1]]
+    else:
+        error(1, lineNumber, line[1])
+    line[0] = opcodes[line[0]] + '00000'
     return ''.join(line)
 
 def parse_typeD(line, lineNumber):
     if len(line) != 3:
         error(1, lineNumber)
+        return ''
     line[0] = opcodes[line[0]]
     if line[1] not in registers.keys():
         error(1, lineNumber, line[1])
@@ -99,6 +113,7 @@ def parse_typeD(line, lineNumber):
 def parse_typeE(line, lineNumber):
     if len(line) != 2:
         error(1, lineNumber)
+        return ''
     line[0] = opcodes[line[0]] + '000' # 3-bit padding
     if line[1] not in programLabels.keys():
         error(3, lineNumber)
@@ -109,6 +124,7 @@ def parse_typeE(line, lineNumber):
 def parse_typeF(line, lineNumber):
     if len(line) != 1:
         error(1, lineNumber)
+        return ''
     line[0] = opcodes[line[0]].ljust(16, '0')
     return ''.join(line)
 
