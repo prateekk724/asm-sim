@@ -11,9 +11,10 @@ for line in stdin:
     if line == '':
         break
     else:
-        codeLine = line[:-1]
-        instructions[lineCount] = codeLine.split()
-        srcCode[lineCount] = codeLine.split()
+        codeLine = line.replace('\n', '')
+        if codeLine != '':
+            instructions[lineCount] = codeLine.split()
+            srcCode[lineCount] = codeLine.split()
         lineCount += 1
 
 # source code data
@@ -87,7 +88,7 @@ def parse_typeC(line, lineNumber):
             line[1] = '111'
             return ''.join(line)
         else:
-            error(1, lineNumbr, line[1])
+            error(1, lineNumber, line[1])
     elif line[1] in registers.keys():
         line[1] = registers[line[1]]
     else:
@@ -105,7 +106,7 @@ def parse_typeD(line, lineNumber):
     else:
         line[1] = registers[line[1]];
     if line[2] not in programVariables.keys():
-        error(1, lineNumber, line[2])
+        error(2, lineNumber, line[2])
     else:
         line[2] = programVariables[line[2]]
     return ''.join(line)
@@ -144,15 +145,15 @@ def assemble():
     variableLineNumbers = list()
     for i, line in instructions.items():
         if line[0] == 'var':
-            if len(line) != 2:
-                error(1, i)
-            else:
+            if len(line) == 2:
                 programVariables[line[1]] = 'null'
-                variableLineNumbers.append(i)
+            else:
+                error(1, i)
+            variableLineNumbers.append(i)
         else:
             break
     for lineNumber in variableLineNumbers:
-        instructions.pop(variableLineNumbers[lineNumber])
+        instructions.pop(lineNumber)
 
     totalInstructions = len(instructions)
     variableNames = list(programVariables.keys())
@@ -181,7 +182,10 @@ def assemble():
         machineInstruction = ''
         if line[0] not in opcodes.keys():
             # TODO: add error subcases.
-            error(1, i)
+            if line[0] == 'var':
+                error(7, i)
+            else:
+                error(1, i)
         elif line[0] in instructionType['A']:
             machineInstruction = parse_typeA(line, i)
         elif line[0] in instructionType['B']:
