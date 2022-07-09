@@ -104,7 +104,7 @@ def parse_typeD(line, lineNumber):
     if line[1] not in registers.keys():
         error(1, lineNumber, line[1])
     else:
-        line[1] = registers[line[1]];
+        line[1] = registers[line[1]]
     if line[2] not in programVariables.keys():
         error(2, lineNumber, line[2])
     else:
