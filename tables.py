@@ -19,12 +19,15 @@ opcodes = {
     'jlt' : '01100',    # E     jlt mem_addr
     'jgt' : '01101',    # E     jgt mem_addr
     'je'  : '01111',    # E     je mem_addr
-    'hlt' : '01010'     # F     hlt
+    'hlt' : '01010',    # F     hlt
+    'addf': '00000',    # A     addf reg1 reg2 reg3     reg3 = reg1 + reg2
+    'subf': '00001',    # A     subf reg1 reg2 reg3     reg3 = reg1 - reg2
+    'movf': '00010'     # B     movf reg1 $Imm          reg1 = $Imm
 }
 
 instructionType = {
-    'A' : ['add', 'sub', 'mul', 'or', 'xor', 'and'],
-    'B' : ['mov', 'rs', 'ls'],
+    'A' : ['add', 'sub', 'mul', 'or', 'xor', 'and', 'addf', 'subf'],
+    'B' : ['mov', 'rs', 'ls', 'movf'],
     'C' : ['mov', 'div', 'not', 'cmp'],
     'D' : ['ld', 'st'],
     'E' : ['jmp', 'jlt', 'jgt', 'je'],
@@ -32,8 +35,8 @@ instructionType = {
 }
 
 instructionOpcode = {
-    'A' : ['10000', '10001', '10110', '11011', '11010', '11100'],
-    'B' : ['10010', '11000', '11001'],
+    'A' : ['10000', '10001', '10110', '11011', '11010', '11100', '00000', '00001'],
+    'B' : ['10010', '11000', '11001', '00010'],
     'C' : ['10011', '10111', '11101', '11110'],
     'D' : ['10110', '10101'],
     'E' : ['11111', '01100', '01101', '011111'],
@@ -66,4 +69,4 @@ errors = {
     11: 'Assembly code cannot be accomodated in memory'
 }
 
-keywords = ['add', 'sub', 'mul', 'or', 'xor', 'and', 'mov', 'rs', 'ls', 'mov', 'div', 'not', 'cmp', 'ld', 'st', 'jmp', 'jlt', 'jgt', 'je', 'hlt', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'FLAGS']
+keywords = ['add', 'sub', 'mul', 'or', 'xor', 'and', 'mov', 'rs', 'ls', 'mov', 'div', 'not', 'cmp', 'ld', 'st', 'jmp', 'jlt', 'jgt', 'je', 'hlt', 'addf', 'subf', 'movf', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'FLAGS']

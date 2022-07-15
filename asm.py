@@ -55,6 +55,19 @@ def parse_typeB(line, lineNumber):
     if len(line) != 3:
         error(1, lineNumber)
         return ''
+
+    if line[0] == 'movf':
+        line[0] = opcodes[line[0]]
+        if line[1] not in registers.keys():
+            error(1, lineNumber, line[1])
+        else:
+            line[1] = registers[line[1]]
+        if float(line[2][1:]) > 255 or float(line[2][1:]) < 0:
+            error(5, lineNumber, line[2])
+        else:
+            num = (float)(line[2][1:])
+        return ''.join(line)
+
     if line[2][0] == '$': 
         if line[0] == 'mov':
             line[0] = '10010'
