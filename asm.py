@@ -50,7 +50,7 @@ def parse_typeA(line, lineNumber):
         else:
             line[i] = registers[line[i]]
     return ''.join(line)
-
+import math
 def parse_typeB(line, lineNumber):
     if len(line) != 3:
         error(1, lineNumber)

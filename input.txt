@@ -1,16 +1,14 @@
 var X
 var Y
 
-var Z
-mov R1 $10
-mov FLAGS R2
+mov R1 $1
+mov R2 $0
+mov R3 $10
 
-labelA: mul R3 R1 R2
-st R2 X
+less: add R1 R2 R2
+cmp R2 R3
+jlt less
 
-labelB: mov R2 $100
-st R2 Y
-jlt labelA
-cmp R1 R2
-jmp labelB
+st R4 X
+
 hlt

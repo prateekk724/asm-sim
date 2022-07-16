@@ -54,6 +54,7 @@ def execEngine(instruction):
     global halt
     opcode = instruction[:5]
     if opcode in instructionOpcode['A']:
+        overflow = 0
         reg1 = regFile(instruction[7:10])
         reg2 = regFile(instruction[10:13])
         reg3 = instruction[13:]
@@ -61,16 +62,19 @@ def execEngine(instruction):
             sum = int(reg1, 2) + int(reg2, 2)
             if sum > 2**16:
                 sum = 2**16
+                overflow = 1
             reg[reg3] = bin(sum)[2:].rjust(16, '0')
         elif opcode == '10001': # sub
             sub = int(reg1, 2) - int(reg2, 2)
             if sub < 0:
                 sub = 0
+                overflow = 1
             reg[reg3] = bin(sub)[2:].rjust(16, '0')
         elif opcode == '10110': # mul
             mul = int(reg1, 2) * int(reg2, 2)
             if mul > 2**16:
                 mul = 2**16
+                overflow = 1
             reg[reg3] = bin(mul)[2:].rjust(16, '0')
         elif opcode == '11011': # or
             resor = int(reg1, 2) | int(reg2, 2)
@@ -81,6 +85,10 @@ def execEngine(instruction):
         elif opcode == '11100': # and
             resand = int(reg1, 2) & int(reg2, 2)
             reg[reg3] = bin(resand)[2:].rjust(16, '0')
+        if overflow:
+            reg['111'] = reg['111'][0:12] + '1' + reg['111'][13:]
+        else:
+            reg['111'] = reg['111'][0:12] + '0' + reg['111'][13:]
     elif opcode in instructionOpcode['B']:
         reg1 = instruction[5:8]
         imm = int(instruction[8:], 2)
@@ -106,8 +114,13 @@ def execEngine(instruction):
             reg['001'] = bin((int(reg1, 2) % int(reg2, 2)))[2:].rjust(16, '0')
         elif opcode == '11101': # not 
             reg[instruction[13:]] = bin((~ int(reg1, 2)))[2:].rjust(16, '0')
-        elif opcode == '11110': # cmp
-            pass
+        elif opcode == '11110': #cmp
+            if int(reg1, 2) < int(reg2, 2):
+                reg['111'] = reg['111'][0:13] + '100'
+            elif int(reg1, 2) > int(reg2, 2):
+                reg['111'] = reg['111'][0:13] + '010'
+            else:
+                reg['111'] = reg['111'][0:13] + '001'
     elif opcode in instructionOpcode['D']:
         addr = int(instruction[8:], 2)
         if opcode == '10110': # ld
@@ -115,15 +128,15 @@ def execEngine(instruction):
         elif opcode == '10101': # st
             mem[addr] = reg[instruction[5:8]]
     elif opcode in instructionOpcode['E']:
-        addr = instruction[8:]
+        addr = instruction[8:].rjust(16, '0')
         if opcode == '11111': # jmp
             return addr
-        elif opcode == '01100': # jlt
-            pass 
-        elif opcode == '01101': # jgt
-            pass
-        elif opcode == '01111': # je
-            pass
+        elif opcode == '01100' and reg['111'][13] == '1':   # jlt
+            return addr
+        elif opcode == '01101' and reg['111'][15] == '1':   # jgt
+            return addr
+        elif opcode == '01111' and reg['111'][14] == '1':   # je
+            return addr
     elif opcode in instructionOpcode['F']:
         halt = True
 
