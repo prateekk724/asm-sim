@@ -1,6 +1,7 @@
 #!/bin/python
 from sys import stdin
 from tables import *
+from matplotlib import pyplot
 
 # Crate and initialize registers.
 reg = {
@@ -86,9 +87,8 @@ def execEngine(instruction):
             resand = int(reg1, 2) & int(reg2, 2)
             reg[reg3] = bin(resand)[2:].rjust(16, '0')
         if overflow:
-            reg['111'] = reg['111'][0:12] + '1' + reg['111'][13:]
-        else:
-            reg['111'] = reg['111'][0:12] + '0' + reg['111'][13:]
+            reg['111'] = '0000000000001000'
+        reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['B']:
         reg1 = instruction[5:8]
         imm = int(instruction[8:], 2)
@@ -104,6 +104,7 @@ def execEngine(instruction):
                 reg[reg1] = '0000000000000000'
             else:
                 reg[reg1] = reg[reg1][imm:].ljust(16, '0')
+        reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['C']:
         reg1 = regFile(instruction[10:13])
         reg2 = regFile(instruction[13:])
@@ -116,17 +117,18 @@ def execEngine(instruction):
             reg[instruction[13:]] = bin((~ int(reg1, 2)))[2:].rjust(16, '0')
         elif opcode == '11110': #cmp
             if int(reg1, 2) < int(reg2, 2):
-                reg['111'] = reg['111'][0:13] + '100'
+                reg['111'] = '0000000000000100'
             elif int(reg1, 2) > int(reg2, 2):
-                reg['111'] = reg['111'][0:13] + '010'
+                reg['111'] = '0000000000000010'
             else:
-                reg['111'] = reg['111'][0:13] + '001'
+                reg['111'] = '0000000000000001'
     elif opcode in instructionOpcode['D']:
         addr = int(instruction[8:], 2)
         if opcode == '10110': # ld
             reg[instruction[5:8]] = getmem(addr)
         elif opcode == '10101': # st
             mem[addr] = reg[instruction[5:8]]
+        reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['E']:
         addr = instruction[8:].rjust(8, '0')
         if opcode == '11111': # jmp
@@ -137,10 +139,15 @@ def execEngine(instruction):
             return addr
         elif opcode == '01111' and reg['111'][14] == '1':   # je
             return addr
+        reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['F']:
         halt = True
+        reg['111'] = '0000000000000000'
 
     return bin(int(pc, 2) + 1)[2:].rjust(8, '0')
+
+accessplots = list()
+accessplots.append(int('00000000', 2))
 
 if __name__ == "__main__":
     initializemem()
@@ -152,6 +159,10 @@ if __name__ == "__main__":
         dumppc()
         dumpRF()
         pc = new_pc
+        accessplots.append(int(pc, 2))
 
     for cell in mem.values():
         print(cell)
+
+    pyplot.plot(accessplots, 'bo')
+    pyplot.show()

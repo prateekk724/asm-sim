@@ -3,9 +3,17 @@ var Y
 
 mov R1 $1
 mov R2 $0
-mov R3 $10
+mov R3 $30
 
 less: add R1 R2 R2
+mov R5 $1
+mov R5 $1
+mov R5 $1
+mov R5 $1
+mov R5 $1
+mov R5 $1
+mov R5 $1
+mov R5 $1
 cmp R2 R3
 jlt less
 
