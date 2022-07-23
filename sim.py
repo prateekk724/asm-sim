@@ -60,8 +60,8 @@ def execEngine(instruction):
         reg3 = instruction[13:]
         if opcode == '10000': # add
             sum = int(reg1, 2) + int(reg2, 2)
-            if sum > 2**16:
-                sum = 2**16
+            if sum > 2**17-1:
+                sum = 2**17-1
                 overflow = 1
             reg[reg3] = bin(sum)[2:].rjust(16, '0')
         elif opcode == '10001': # sub
@@ -72,8 +72,8 @@ def execEngine(instruction):
             reg[reg3] = bin(sub)[2:].rjust(16, '0')
         elif opcode == '10110': # mul
             mul = int(reg1, 2) * int(reg2, 2)
-            if mul > 2**16:
-                mul = 2**16
+            if mul > 2**17-1:
+                mul = 2**17-1
                 overflow = 1
             reg[reg3] = bin(mul)[2:].rjust(16, '0')
         elif opcode == '11011': # or
@@ -128,7 +128,7 @@ def execEngine(instruction):
         elif opcode == '10101': # st
             mem[addr] = reg[instruction[5:8]]
     elif opcode in instructionOpcode['E']:
-        addr = instruction[8:].rjust(16, '0')
+        addr = instruction[8:].rjust(8, '0')
         if opcode == '11111': # jmp
             return addr
         elif opcode == '01100' and reg['111'][13] == '1':   # jlt
@@ -140,18 +140,16 @@ def execEngine(instruction):
     elif opcode in instructionOpcode['F']:
         halt = True
 
-    return bin(int(pc, 2) + 1)[2:].rjust(16, '0')
+    return bin(int(pc, 2) + 1)[2:].rjust(8, '0')
 
 if __name__ == "__main__":
     initializemem()
     global pc
-    pc = '0000000000000000'
+    pc = '00000000'
     while(not halt):
         instruction = getmem(pc)
         new_pc = execEngine(instruction)
-        print("PC: ", end='')
         dumppc()
-        print("RF: ", end='')
         dumpRF()
         pc = new_pc
 
