@@ -1,7 +1,7 @@
 #!/bin/python
 from sys import stdin
 from tables import *
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
 
 # Crate and initialize registers.
 reg = {
@@ -36,6 +36,7 @@ def initializemem():
 
 def getmem(address):
    location = int(address, 2) 
+   accessplots.append(location)
    return mem[location]
 
 def regFile(regName):
@@ -127,6 +128,7 @@ def execEngine(instruction):
         if opcode == '10110': # ld
             reg[instruction[5:8]] = getmem(addr)
         elif opcode == '10101': # st
+            accessplots.append(addr)
             mem[addr] = reg[instruction[5:8]]
         reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['E']:
@@ -146,23 +148,24 @@ def execEngine(instruction):
 
     return bin(int(pc, 2) + 1)[2:].rjust(8, '0')
 
-accessplots = list()
-accessplots.append(int('00000000', 2))
 
 if __name__ == "__main__":
     initializemem()
     global pc
     pc = '00000000'
+    global accessplots
+    accessplots = list()
     while(not halt):
         instruction = getmem(pc)
         new_pc = execEngine(instruction)
         dumppc()
         dumpRF()
         pc = new_pc
-        accessplots.append(int(pc, 2))
 
     for cell in mem.values():
         print(cell)
 
-    pyplot.plot(accessplots, 'bo')
-    pyplot.show()
+    plt.plot(accessplots, 'bo')
+    plt.xlabel("Cycle")
+    plt.ylabel("Memory Address")
+    plt.show()
