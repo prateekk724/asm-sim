@@ -28,10 +28,11 @@ halt = False
 def initializemem():
     i = 0
     for line in stdin:
-        if line != '':
+        if line == '' or line == '\n':
+            break
+        else:
             mem[i] = line[:-1]
             i += 1
-        else: break
     return True
 
 def getmem(address):
@@ -47,9 +48,7 @@ def dumppc():
     return True
 
 def dumpRF():
-    for regval in reg.values():
-        print(regval, end=' ')
-    print()
+    print(' '.join(reg.values()))
     return True
 
 def execEngine(instruction):
@@ -148,7 +147,6 @@ def execEngine(instruction):
 
     return bin(int(pc, 2) + 1)[2:].rjust(8, '0')
 
-
 if __name__ == "__main__":
     initializemem()
     global pc
@@ -164,8 +162,3 @@ if __name__ == "__main__":
 
     for cell in mem.values():
         print(cell)
-
-    plt.plot(accessplots, 'bo')
-    plt.xlabel("Cycle")
-    plt.ylabel("Memory Address")
-    plt.show()
