@@ -157,7 +157,11 @@ def execEngine(instruction):
             reg['000'] = bin(int((int(reg1, 2) / int(reg2, 2))))[2:].rjust(16, '0')
             reg['001'] = bin((int(reg1, 2) % int(reg2, 2)))[2:].rjust(16, '0')
         elif opcode == '11101': # not 
-            reg[instruction[13:]] = bin((~ int(reg1, 2)))[2:].rjust(16, '0')
+            tmp = []
+            for bit in reg1:
+                if bit == '0': tmp.append('1')
+                if bit == '1': tmp.append('0')
+            reg[instruction[13:]] = ''.join(tmp) 
         elif opcode == '11110': #cmp
             if int(reg1, 2) < int(reg2, 2):
                 reg['111'] = '0000000000000100'
@@ -186,7 +190,6 @@ def execEngine(instruction):
             return addr
     elif opcode in instructionOpcode['F']:
         halt = True
-        reg['111'] = '0000000000000000'
 
     return bin(int(pc, 2) + 1)[2:].rjust(8, '0')
 
