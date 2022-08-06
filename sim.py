@@ -150,6 +150,7 @@ def execEngine(instruction):
     elif opcode in instructionOpcode['C']:
         reg1 = regFile(instruction[10:13])
         reg2 = regFile(instruction[13:])
+        reg['111'] = '0000000000000000'
         if opcode == '10011': # mov
             reg[instruction[13:]] =  reg1
         elif opcode == '10111': # div
@@ -162,7 +163,7 @@ def execEngine(instruction):
                 reg['111'] = '0000000000000100'
             elif int(reg1, 2) > int(reg2, 2):
                 reg['111'] = '0000000000000010'
-            else:
+            elif int(reg1, 2) == int(reg2, 2):
                 reg['111'] = '0000000000000001'
     elif opcode in instructionOpcode['D']:
         addr = int(instruction[8:], 2)
@@ -174,6 +175,7 @@ def execEngine(instruction):
         reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['E']:
         addr = instruction[8:].rjust(8, '0')
+        reg['111'] = '0000000000000000'
         if opcode == '11111': # jmp
             return addr
         elif opcode == '01100' and reg['111'][13] == '1':   # jlt
@@ -182,7 +184,6 @@ def execEngine(instruction):
             return addr
         elif opcode == '01111' and reg['111'][14] == '1':   # je
             return addr
-        reg['111'] = '0000000000000000'
     elif opcode in instructionOpcode['F']:
         halt = True
         reg['111'] = '0000000000000000'
@@ -204,3 +205,8 @@ if __name__ == "__main__":
 
     for cell in mem.values():
         print(cell)
+
+    plt.plot(accessplots, 'bo')
+    plt.xlabel("Cycle")
+    plt.ylabel("Memory Address")
+    plt.show()
