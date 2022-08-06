@@ -1,4 +1,5 @@
 #!/bin/python
+import math
 from sys import stdin
 from tables import *
 import matplotlib.pyplot as plt
@@ -51,6 +52,39 @@ def dumpRF():
     print(' '.join(reg.values()))
     return True
 
+def base2(val):
+    num = bin(math.floor(val))[2:]
+    flt = val - int(num, 2)
+    num = num + '.'
+    while(flt != 0):
+        flt = flt * 2
+        num = num + str(math.floor(flt))
+        flt = flt - math.floor(flt)
+    return num
+
+def base10(val):
+    val = val.split('.')
+    num = int(val[0], 2)
+    i = 0
+    for x in val[1]:
+        i += 1
+        if x == '1':
+            num += 1/2**i
+    return num
+
+def numToFloat(val):
+    num = base2(val)
+    exp = num.index('.') - 1
+    num = ''.join(num.split('.'))
+    num = num[1:]
+    reg = '00000000' + bin(exp)[2:].rjust(3, '0') + num[:5] 
+    return reg
+
+def floatToNum(val):
+    num = float('1.' + val[11:])
+    exp = int(val[8:11], 2)
+    return base10(str(num * 10**exp))
+
 def execEngine(instruction):
     global halt
     opcode = instruction[:5]
@@ -59,7 +93,13 @@ def execEngine(instruction):
         reg1 = regFile(instruction[7:10])
         reg2 = regFile(instruction[10:13])
         reg3 = instruction[13:]
-        if opcode == '10000': # add
+        if opcode == '00000':   # addf
+            sum = floatToNum(reg1) + floatToNum(reg2)
+            reg[reg3] = numToFloat(sum)
+        elif opcode == '00001': # subf
+            sum = floatToNum(reg1) - floatToNum(reg2)
+            reg[reg3] = numToFloat(sum)
+        elif opcode == '10000': # add
             sum = int(reg1, 2) + int(reg2, 2)
             if sum > 2**17-1:
                 sum = 2**17-1
@@ -92,7 +132,9 @@ def execEngine(instruction):
     elif opcode in instructionOpcode['B']:
         reg1 = instruction[5:8]
         imm = int(instruction[8:], 2)
-        if opcode == '10010': # mov
+        if opcode == '00010':   # movf
+            reg[reg1] = instruction[8:].rjust(16, '0')
+        elif opcode == '10010': # mov
             reg[reg1] = instruction[8:].rjust(16, '0')
         elif opcode == '11000': # rs
             if imm >= 16:
