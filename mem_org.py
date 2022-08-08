@@ -64,3 +64,18 @@ def typeB2():
     supportedAddrTypes = {"bit" : 1, "nibble" : 4, "byte" : 8, "word" : cpuBits}
     memorySize = 2**addressPins * supportedAddrTypes[addressableType] * 0.125
     return getMemSize(memorySize)
+
+# Program driver
+choice = int(input("Enter type: "))
+if choice == 1:
+    typeA()
+elif choice == 2:
+    subchoice = int(input("Enter subtype: "))
+    if subchoice == 1:
+        print("Result:", typeB1())
+    elif subchoice == 2:
+        print("Result:", ' '.join(typeB2()))
+    else:
+        print("Invalid choice!")
+else:
+    print("Invalid choice!")
